@@ -1,0 +1,868 @@
+USE [master]
+GO
+/****** Object:  Database [Yamdb]    Script Date: 06.05.2024 21:14:41 ******/
+CREATE DATABASE [Yamdb]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Yamdb', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\Yamdb.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'Yamdb_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\Yamdb_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [Yamdb] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Yamdb].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Yamdb] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Yamdb] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Yamdb] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Yamdb] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Yamdb] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Yamdb] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Yamdb] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Yamdb] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Yamdb] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Yamdb] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Yamdb] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Yamdb] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Yamdb] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Yamdb] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Yamdb] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Yamdb] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Yamdb] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Yamdb] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [Yamdb] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [Yamdb] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Yamdb] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Yamdb] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [Yamdb] SET RECOVERY FULL 
+GO
+ALTER DATABASE [Yamdb] SET  MULTI_USER 
+GO
+ALTER DATABASE [Yamdb] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Yamdb] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [Yamdb] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [Yamdb] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [Yamdb] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [Yamdb] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'Yamdb', N'ON'
+GO
+ALTER DATABASE [Yamdb] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [Yamdb] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [Yamdb]
+GO
+/****** Object:  Table [dbo].[Category]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Category](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](50) NULL,
+	[slug] [varchar](50) NULL,
+ CONSTRAINT [PK_Category] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Comments]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Comments](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[review_id] [int] NOT NULL,
+	[text] [varchar](255) NULL,
+	[author] [int] NULL,
+	[pub_date] [date] NULL,
+ CONSTRAINT [PK_Comments] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Genre]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Genre](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](50) NULL,
+	[slug] [varchar](50) NULL,
+ CONSTRAINT [PK_Genre] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GenreTitle]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GenreTitle](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[title_id] [int] NULL,
+	[genre_id] [int] NULL,
+ CONSTRAINT [PK_GenreTitle] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Review]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Review](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[title] [int] NULL,
+	[text] [varchar](250) NULL,
+	[author] [int] NULL,
+	[score] [int] NULL,
+	[PublicDate] [date] NULL,
+ CONSTRAINT [PK_Review] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Roles]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Roles](
+	[RoleId] [int] NOT NULL,
+	[RoleName] [varchar](50) NULL,
+ CONSTRAINT [PK_Roles] PRIMARY KEY CLUSTERED 
+(
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Titles]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Titles](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](50) NULL,
+	[year] [int] NULL,
+	[category] [int] NULL,
+ CONSTRAINT [PK_Titles] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[UserId] [int] NOT NULL,
+	[username] [varchar](50) NULL,
+	[email] [varchar](50) NULL,
+	[role] [int] NULL,
+	[Patr] [varchar](50) NULL,
+	[FirstName] [varchar](50) NULL,
+	[LastName] [varchar](50) NULL,
+	[Password] [varchar](50) NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Category] ON 
+GO
+INSERT [dbo].[Category] ([id], [name], [slug]) VALUES (1, N'Фильм', N'movie')
+GO
+INSERT [dbo].[Category] ([id], [name], [slug]) VALUES (2, N'Книга', N'book')
+GO
+INSERT [dbo].[Category] ([id], [name], [slug]) VALUES (3, N'Музыка', N'music')
+GO
+INSERT [dbo].[Category] ([id], [name], [slug]) VALUES (4, N'айцай', N'qweqwe')
+GO
+SET IDENTITY_INSERT [dbo].[Category] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Comments] ON 
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (1, 6, N'Ничего подобного, в фильме всё не так, и программирование тут вообще ни при чём!', 102, CAST(N'2020-01-13' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (2, 6, N'Ну надо же, не нашлось ничего лучшего, кроме как прокомментировать разговор про гамбургеры, будто в фильме ничего важнее этого нет', 101, CAST(N'2020-01-13' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (3, 6, N'Кстати, а что такое "четверть фунта""? В граммах это сколько?"', 103, CAST(N'2020-01-13' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (7, 4, N'Вранье', 100, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (8, 6, N'qweqweqwe', 100, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (9, 4, N'gerg', 101, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Comments] ([id], [review_id], [text], [author], [pub_date]) VALUES (10, 1, N'qweqwe', 100, CAST(N'2024-04-23' AS Date))
+GO
+SET IDENTITY_INSERT [dbo].[Comments] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Genre] ON 
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (1, N'Драма', N'drama')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (2, N'Комедия', N'comedy')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (3, N'Вестерн', N'western')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (4, N'Фэнтези', N'fantasy')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (5, N'Фантастика', N'sci-fi')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (6, N'Детектив', N'detective')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (7, N'Триллер', N'thriller')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (8, N'Сказка', N'tale')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (9, N'Гонзо', N'gonzo')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (10, N'Роман', N'roman')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (11, N'Баллада', N'ballad')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (12, N'Rock-n-roll', N'rock-n-roll')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (13, N'Классика', N'classical')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (14, N'Рок', N'rock')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (15, N'Шансон', N'chanson')
+GO
+INSERT [dbo].[Genre] ([id], [name], [slug]) VALUES (16, N'пукпук', N'qweqwe')
+GO
+SET IDENTITY_INSERT [dbo].[Genre] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GenreTitle] ON 
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (1, 1, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (2, 2, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (3, 3, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (4, 4, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (5, 5, 2)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (6, 5, 6)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (7, 5, 7)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (8, 6, 3)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (9, 7, 4)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (10, 8, 7)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (11, 9, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (12, 9, 2)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (13, 10, 4)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (14, 11, 4)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (15, 12, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (16, 12, 5)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (17, 12, 6)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (18, 12, 8)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (19, 13, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (20, 14, 5)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (21, 15, 2)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (22, 15, 6)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (23, 15, 8)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (24, 16, 2)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (25, 17, 2)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (26, 18, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (27, 19, 1)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (28, 20, 7)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (29, 20, 8)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (30, 21, 9)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (31, 22, 10)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (32, 23, 10)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (33, 24, 10)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (34, 25, 8)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (35, 26, 15)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (36, 27, 11)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (37, 27, 14)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (38, 28, 11)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (39, 29, 12)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (40, 30, 14)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (41, 31, 13)
+GO
+INSERT [dbo].[GenreTitle] ([id], [title_id], [genre_id]) VALUES (42, 32, 13)
+GO
+SET IDENTITY_INSERT [dbo].[GenreTitle] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Review] ON 
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (1, 1, N'Эти голоса были чище и светлее тех, о которых мечтали в этом сером, убогом месте. Как будто две птички влетели и своими голосами развеяли стены наших клеток, и на короткий миг каждый человек в Шоушенке почувствовал себя ', 100, 10, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (2, 1, N'Эти стены имеют одно свойство: сначала ты их ненавидишь, потом привыкаешь, а потом не можешь без них жить', 101, 10, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (3, 2, N'Фильм, разобранный на цитаты, достоин высшей оценки. Десять с плюсом (жаль, тут плюса нет. ы пришел и говоришь: ""Дон Корлеоне, мне нужна справедливость"". Но ты просишь без уважения, ты не предлагаешь дружбу, ты даже не назвал меня Крестным Отцом)', 102, 10, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (4, 2, N'Жестокий, жестокий, жестокий мир, не о таком мечтали мы в детстве!!', 103, 1, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (5, 2, N'Это мои соседи! Ставлю три звезды за то, что они дважды отдавили мне окном пальцы:', 104, 3, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (6, 8, N'Всё, как в разных языках программирования! В основном — похоже, но вот эти маленькие различия выводят из себя. ', 101, 4, CAST(N'2019-09-24' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (8, 2, N'qweq', 100, 5, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (9, 3, N'qwe', 100, 6, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (10, 8, N'qweqwe', 100, 6, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (11, 2, N'qweqwe', 101, 6, CAST(N'2024-04-23' AS Date))
+GO
+INSERT [dbo].[Review] ([id], [title], [text], [author], [score], [PublicDate]) VALUES (12, 4, N'qwe', 100, 5, CAST(N'2024-04-23' AS Date))
+GO
+SET IDENTITY_INSERT [dbo].[Review] OFF
+GO
+INSERT [dbo].[Roles] ([RoleId], [RoleName]) VALUES (1, N'user')
+GO
+INSERT [dbo].[Roles] ([RoleId], [RoleName]) VALUES (2, N'admin')
+GO
+INSERT [dbo].[Roles] ([RoleId], [RoleName]) VALUES (3, N'moderator')
+GO
+SET IDENTITY_INSERT [dbo].[Titles] ON 
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (1, N'Побег из Шоушенка', 1994, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (2, N'Крестный отец', 1972, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (3, N'12 разгневанных мужчин', 1957, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (4, N'Список Шиндлера', 1993, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (5, N'Криминальное чтиво', 1994, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (6, N'Хороший, плохой, злой', 1966, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (7, N'Властелин колец: Братство кольца', 2001, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (8, N'Бойцовский клуб', 1999, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (9, N'Форрест Гамп', 1994, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (10, N'Звёздные войны. Эпизод 5: Империя наносит ответный', 1980, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (11, N'Властелин колец: Две крепости', 2002, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (12, N'Матрица', 1999, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (13, N'Пролетая над гнездом кукушки', 1975, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (14, N'Назад в будущее', 1985, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (15, N'Операция «Ы» и другие приключения Шурика', 1965, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (16, N'Карты, деньги, два ствола', 1998, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (17, N'Джентльмены удачи ', 1971, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (18, N'Джанго освобожденный', 2012, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (19, N'Generation П', 2011, 1)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (20, N'Колобок', 1873, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (21, N'Страх и ненависть в Лас-Вегасе', 1971, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (22, N'Война и мир', 1865, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (23, N'Улисс', 1918, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (24, N'Generation П', 1999, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (25, N'Винни Пух и все-все-все', 1926, 2)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (26, N'Стас Михайлов - Позывные на любовь', 2004, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (27, N'Led Zeppelin — Stairway to Heaven', 1971, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (28, N'Jethro Tull - Aqualung', 1971, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (29, N'Elvis Presley - Blue Suede Shoes', 1955, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (30, N'Deep Purple — Smoke on the Water', 1971, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (31, N'Моцарт - Турецкий марш', 1784, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (32, N'Бах. Оркестровая Сюита №2 си минор', 1739, 3)
+GO
+INSERT [dbo].[Titles] ([id], [name], [year], [category]) VALUES (33, N'hrth', 2001, 1)
+GO
+SET IDENTITY_INSERT [dbo].[Titles] OFF
+GO
+INSERT [dbo].[Users] ([UserId], [username], [email], [role], [Patr], [FirstName], [LastName], [Password]) VALUES (100, N'bingobongo', N'bingobongo@yamdb.fake', 1, N'Ivanovich', N'Ivan', N'Ivanov', N'12345')
+GO
+INSERT [dbo].[Users] ([UserId], [username], [email], [role], [Patr], [FirstName], [LastName], [Password]) VALUES (101, N'capt_obvious', N'capt_obvious@yamdb.fake', 2, N'Ivanovich', N'Ivan', N'Ivanov', N'123456')
+GO
+INSERT [dbo].[Users] ([UserId], [username], [email], [role], [Patr], [FirstName], [LastName], [Password]) VALUES (102, N'faust', N'faust@yamdb.fake', 1, N'Ivanovich', N'Ivan', N'Ivanov', N'12345')
+GO
+INSERT [dbo].[Users] ([UserId], [username], [email], [role], [Patr], [FirstName], [LastName], [Password]) VALUES (103, N'reviewer', N'reviewer@yamdb.fake', 1, N'Ivanovich', N'Ivan', N'Ivanov', N'12345')
+GO
+INSERT [dbo].[Users] ([UserId], [username], [email], [role], [Patr], [FirstName], [LastName], [Password]) VALUES (104, N'angry', N'angry@yamdb.fake', 3, N'Ivanovich', N'Ivan', N'Ivanov', N'1234567')
+GO
+ALTER TABLE [dbo].[Comments] ADD  CONSTRAINT [DF_Comments_pub_date]  DEFAULT (getdate()) FOR [pub_date]
+GO
+ALTER TABLE [dbo].[Review] ADD  CONSTRAINT [DF_Review_PublicDate]  DEFAULT (getdate()) FOR [PublicDate]
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Review] FOREIGN KEY([review_id])
+REFERENCES [dbo].[Review] ([id])
+GO
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Review]
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Users] FOREIGN KEY([author])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Users]
+GO
+ALTER TABLE [dbo].[GenreTitle]  WITH CHECK ADD  CONSTRAINT [FK_GenreTitle_Genre] FOREIGN KEY([genre_id])
+REFERENCES [dbo].[Genre] ([id])
+GO
+ALTER TABLE [dbo].[GenreTitle] CHECK CONSTRAINT [FK_GenreTitle_Genre]
+GO
+ALTER TABLE [dbo].[GenreTitle]  WITH CHECK ADD  CONSTRAINT [FK_GenreTitle_Titles] FOREIGN KEY([title_id])
+REFERENCES [dbo].[Titles] ([id])
+GO
+ALTER TABLE [dbo].[GenreTitle] CHECK CONSTRAINT [FK_GenreTitle_Titles]
+GO
+ALTER TABLE [dbo].[Review]  WITH CHECK ADD  CONSTRAINT [FK_Review_Titles] FOREIGN KEY([title])
+REFERENCES [dbo].[Titles] ([id])
+GO
+ALTER TABLE [dbo].[Review] CHECK CONSTRAINT [FK_Review_Titles]
+GO
+ALTER TABLE [dbo].[Review]  WITH CHECK ADD  CONSTRAINT [FK_Review_Users] FOREIGN KEY([author])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Review] CHECK CONSTRAINT [FK_Review_Users]
+GO
+ALTER TABLE [dbo].[Titles]  WITH CHECK ADD  CONSTRAINT [FK_Titles_Category] FOREIGN KEY([category])
+REFERENCES [dbo].[Category] ([id])
+GO
+ALTER TABLE [dbo].[Titles] CHECK CONSTRAINT [FK_Titles_Category]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Roles] FOREIGN KEY([role])
+REFERENCES [dbo].[Roles] ([RoleId])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Roles]
+GO
+/****** Object:  StoredProcedure [dbo].[addCategory]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addCategory]
+@name varchar(50),
+@slug varchar(50)
+AS
+BEGIN
+INSERT INTO Category (name, slug)
+VALUES (@name, @slug)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[addcomment]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addcomment]
+@review_id int,
+@text varchar(255),
+@author int
+AS
+BEGIN
+INSERT INTO Comments(review_id, text, author)
+VALUES (@review_id, @text, @author)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[addGenre]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addGenre]
+@name varchar(50),
+@slug varchar(50)
+AS
+BEGIN
+INSERT INTO Genre (name, slug)
+VALUES (@name, @slug)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[addGenreTitle]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addGenreTitle]
+@TitleId int,
+@GenreId int
+
+AS
+BEGIN
+insert into GenreTitle(title_id,genre_id) values(@TitleId, @GenreId)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[addreview]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addreview]
+@title int,
+@text varchar(250),
+@author int,
+@score int
+AS
+BEGIN
+INSERT INTO Review(title, text, author, score)
+VALUES (@title, @text, @author, @score)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[addTitle]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[addTitle]
+@name varchar(50),
+@year int,
+@category int
+AS
+BEGIN
+insert into Titles (name,year,category) values(@name, @year, @category)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[categoryfilter]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[categoryfilter]
+	@category int
+AS
+BEGIN
+SELECT * FROM Titles
+WHERE category=@category
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getCommentList]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getCommentList]
+@title int
+AS
+BEGIN
+ SELECT review_id, text, author
+FROM Comments
+WHERE review_id IN (SELECT id FROM Review WHERE title = @title);
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getGenreList]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getGenreList]
+AS
+BEGIN
+SELECT name from Genre
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getreviewList]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getreviewList]
+@title int
+AS
+BEGIN
+SELECT id, text, author
+FROM Review
+WHERE title = @title
+END
+GO
+/****** Object:  StoredProcedure [dbo].[gettitlegrade]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[gettitlegrade]
+@title int
+AS
+BEGIN
+	SELECT  AVG(score) AS AverageScore
+    FROM Review
+    where title=@title
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetTitleList]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GetTitleList]
+AS
+BEGIN
+SELECT * FROM Titles
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getusergrade]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getusergrade]
+@title int,
+@author int
+AS
+BEGIN
+	SELECT score 
+	FROM Review 
+	WHERE author=@author 
+	AND title=@title
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getuserid]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getuserid]
+@username varchar(50)
+AS
+BEGIN
+SELECT UserId
+FROM Users
+WHERE username = @username
+END
+GO
+/****** Object:  StoredProcedure [dbo].[loadtitleid]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[loadtitleid]
+AS
+BEGIN
+SELECT MAX(id)+1 from Titles
+END
+GO
+/****** Object:  StoredProcedure [dbo].[Login]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[Login]
+@username varchar(50),
+@Password varchar(50)
+AS
+BEGIN
+SELECT * FROM Users
+WHERE username=@username and Password=@Password
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sortbygenre]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sortbygenre]
+@genre_id int
+AS
+BEGIN
+ SELECT *
+FROM Titles
+WHERE id IN (SELECT title_id FROM GenreTitle WHERE genre_id = @genre_id);
+END
+GO
+/****** Object:  StoredProcedure [dbo].[UserValidation]    Script Date: 06.05.2024 21:14:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[UserValidation]
+@username varchar(50)
+AS
+BEGIN
+SELECT role
+FROM Users
+WHERE username = @username
+END
+GO
+USE [master]
+GO
+ALTER DATABASE [Yamdb] SET  READ_WRITE 
+GO
+s
